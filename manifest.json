@@ -1,0 +1,21 @@
+{
+	"manifest_version": 3,
+	"name": "Twitch Hidden Carousel",
+	"version": "1.0.0",
+	"description": "Twitchトップページのカルーセルを非表示にします。",
+	"icons": {
+		"16": "images/size16.png",
+		"48": "images/size48.png",
+		"128": "images/size128.png"
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://www.twitch.tv/*"
+			],
+			"css": [
+				"style.css"
+			]
+		}
+	]
+}
