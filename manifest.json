@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Twitch Hidden Carousel",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Twitchのカルーセルをワンクリックで非表示/表示切り替え。リロード不要、BGM停止機能付き。",
   "permissions": ["storage", "activeTab"],
   "content_scripts": [

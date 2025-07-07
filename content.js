@@ -117,29 +117,49 @@ class TwitchCarouselController {
   }
 
   stopCarouselMedia(element) {
-    // カルーセル内のメディア要素を停止
+    // カルーセル内のメディア要素の音声のみを停止
     const mediaElements = element.querySelectorAll("video, audio");
     mediaElements.forEach((media) => {
       try {
-        media.pause();
-        media.currentTime = 0;
-        media.volume = 0;
+        // 音声のみを無効化（ビデオは破壊しない）
         media.muted = true;
-        // 自動再生属性を削除
+        media.volume = 0;
+
+        // 一時停止（srcは触らない）
+        media.pause();
+
+        // 自動再生を無効化
         media.removeAttribute("autoplay");
-        media.removeAttribute("loop");
+
+        // 音声が再開されないようにイベントリスナーを追加
+        const maintainMute = () => {
+          if (!media.muted) media.muted = true;
+          if (media.volume > 0) media.volume = 0;
+        };
+
+        // 定期的にミュート状態を維持
+        media.addEventListener("volumechange", maintainMute);
+        media.addEventListener("play", maintainMute);
+        media.addEventListener("loadeddata", maintainMute);
+
+        // マークを付けて管理
+        media.setAttribute("data-twitch-muted", "true");
       } catch (e) {
-        console.warn("メディア要素の停止に失敗:", e);
+        console.warn("メディア要素のミュートに失敗:", e);
       }
     });
 
-    // iframe内のメディアも停止を試行
+    // iframe内の音声も停止（表示は維持）
     const iframes = element.querySelectorAll("iframe");
     iframes.forEach((iframe) => {
       try {
-        iframe.style.display = "none";
+        // iframeの音声を無効化するためのスタイル調整
+        iframe.style.visibility = "hidden";
+        iframe.style.position = "absolute";
+        iframe.style.left = "-9999px";
+        iframe.setAttribute("data-twitch-muted", "true");
       } catch (e) {
-        console.warn("iframe の停止に失敗:", e);
+        console.warn("iframe のミュートに失敗:", e);
       }
     });
   }
@@ -164,7 +184,49 @@ class TwitchCarouselController {
     element.style.display = "";
     element.removeAttribute("data-twitch-hidden");
 
+    // メディア要素を復元
+    this.restoreCarouselMedia(element);
+
     this.hiddenCarousels.delete(element);
+  }
+
+  restoreCarouselMedia(element) {
+    // メディア要素の音声を復元
+    const mediaElements = element.querySelectorAll(
+      "video[data-twitch-muted], audio[data-twitch-muted]"
+    );
+    mediaElements.forEach((media) => {
+      try {
+        // ミュートを解除
+        media.muted = false;
+        // ボリュームは少し低めに設定（元の音量を復元したい場合は調整）
+        media.volume = 0.5;
+
+        // イベントリスナーを削除（追加されたミュート維持機能を無効化）
+        media.removeEventListener("volumechange", this.maintainMute);
+        media.removeEventListener("play", this.maintainMute);
+        media.removeEventListener("loadeddata", this.maintainMute);
+
+        // マークを削除
+        media.removeAttribute("data-twitch-muted");
+      } catch (e) {
+        console.warn("メディア要素の復元に失敗:", e);
+      }
+    });
+
+    // iframe要素を復元
+    const iframes = element.querySelectorAll("iframe[data-twitch-muted]");
+    iframes.forEach((iframe) => {
+      try {
+        // スタイルを元に戻す
+        iframe.style.visibility = "";
+        iframe.style.position = "";
+        iframe.style.left = "";
+        iframe.removeAttribute("data-twitch-muted");
+      } catch (e) {
+        console.warn("iframe の復元に失敗:", e);
+      }
+    });
   }
 
   applyCarouselState() {
@@ -175,6 +237,44 @@ class TwitchCarouselController {
         this.hideCarousel(carousel);
       } else {
         this.showCarousel(carousel);
+      }
+    });
+
+    // リロード後の追加対策：既に停止済みのメディアを再確認
+    if (this.isHidden) {
+      setTimeout(() => {
+        this.forceStopAllCarouselMedia();
+      }, 500); // DOM構築完了後に再実行
+    }
+  }
+
+  forceStopAllCarouselMedia() {
+    // 非表示状態で音声が再生されている場合の強制ミュート
+    const carousels = this.findCarouselElements();
+    carousels.forEach((carousel) => {
+      if (
+        carousel.style.display === "none" ||
+        carousel.hasAttribute("data-twitch-hidden")
+      ) {
+        // 非表示なのに音声が再生されている可能性がある要素を強制ミュート
+        const allMedia = carousel.querySelectorAll("video, audio");
+        allMedia.forEach((media) => {
+          if (!media.muted || media.volume > 0) {
+            media.muted = true;
+            media.volume = 0;
+            media.pause();
+
+            // ミュート維持のイベントリスナーを追加
+            const maintainMute = () => {
+              if (!media.muted) media.muted = true;
+              if (media.volume > 0) media.volume = 0;
+            };
+
+            media.addEventListener("volumechange", maintainMute);
+            media.addEventListener("play", maintainMute);
+            media.setAttribute("data-twitch-muted", "true");
+          }
+        });
       }
     });
   }
