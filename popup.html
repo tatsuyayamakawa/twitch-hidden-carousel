@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 220px;
+            padding: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f0f23;
+            color: #efeff1;
+            margin: 0;
+        }
+        
+        .container {
+            text-align: center;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .logo {
+            width: 20px;
+            height: 20px;
+            background-color: #9146ff;
+            border-radius: 3px;
+            margin-right: 8px;
+        }
+        
+        h3 {
+            margin: 0;
+            color: #9146ff;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .toggle-btn {
+            background: linear-gradient(135deg, #9146ff, #7c37d8);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(145, 70, 255, 0.3);
+        }
+        
+        .toggle-btn:hover {
+            background: linear-gradient(135deg, #a970ff, #8e4ec6);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(145, 70, 255, 0.4);
+        }
+        
+        .toggle-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(145, 70, 255, 0.3);
+        }
+        
+        .toggle-btn:disabled {
+            background: linear-gradient(135deg, #464649, #36363a);
+            color: #adadb8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .status {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #adadb8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .status.hidden .status-indicator {
+            background-color: #ff6b6b;
+            box-shadow: 0 0 6px rgba(255, 107, 107, 0.5);
+        }
+        
+        .status.visible .status-indicator {
+            background-color: #51cf66;
+            box-shadow: 0 0 6px rgba(81, 207, 102, 0.5);
+        }
+        
+        .status.error .status-indicator {
+            background-color: #ffc107;
+            box-shadow: 0 0 6px rgba(255, 193, 7, 0.5);
+        }
+        
+        .footer {
+            margin-top: 12px;
+            font-size: 10px;
+            color: #72727e;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo"></div>
+            <h3>Carousel Control</h3>
+        </div>
+        <button id="toggleBtn" class="toggle-btn">読み込み中...</button>
+        <div id="status" class="status">
+            <div class="status-indicator"></div>
+            <span>状態を確認中...</span>
+        </div>
+        <div class="footer">v2.0</div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
