@@ -1,31 +1,32 @@
 {
-	"manifest_version": 3,
-	"name": "Twitch Hide Carousel",
-	"version": "1.0.0",
-	"description": "Twitchフロントページのカルーセルを非表示にします。",
-	"icons": {
-		"16": "images/size16.png",
-		"48": "images/size48.png",
-		"128": "images/size128.png"
-	},
-	"content_scripts": [
-		{
-			"matches": [
-				"https://www.twitch.tv/*"
-			],
-			"css": [
-				"style.css"
-			]
-		}
-	],
-	"background": {
-		"service_worker": "background.js"
-	},
-	"permissions": [
-		"tabs",
-		"scripting"
-	],
-	"host_permissions": [
-		"https://www.twitch.tv/*"
-	]
+  "manifest_version": 3,
+  "name": "Twitch Hidden Carousel",
+  "version": "2.0.0",
+  "description": "Twitchのカルーセルをワンクリックで非表示/表示切り替え。リロード不要、BGM停止機能付き。",
+  "permissions": ["storage", "activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.twitch.tv/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Twitch Carousel Toggle",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "author": "Tatsuya Yamakawa",
+  "homepage_url": "https://github.com/tatsuyayamakawa/twitch-hidden-carousel"
 }
